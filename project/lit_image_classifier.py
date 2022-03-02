@@ -5,7 +5,7 @@ import torch
 import pytorch_lightning as pl
 from torchmetrics import functional as PLF
 from torch.nn import functional as F
-from flash.vision import ImageClassificationData
+from flash.image.classification.input import ImageClassificationData
 from torchvision import transforms
 from torchvision import models
 import numpy as np
