@@ -6,7 +6,6 @@ import pytorch_lightning as pl
 from torchmetrics import functional as PLF
 from torch.nn import functional as F
 from flash.image import ImageClassificationData
-from torchvision import transforms
 from torchvision import models
 import numpy as np
 
@@ -90,18 +89,13 @@ def cli_main():
     # ------------
     # data
     # ------------
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.4913, 0.482, 0.446], std=[0.247, 0.243, 0.261])
-    ])
-
     # in real life you would have a separate validation split
     datamodule = ImageClassificationData.from_folders(
         train_folder=args.data_dir + '/train',
         val_folder=args.data_dir + '/test',
         test_folder=args.data_dir + '/test',
         batch_size=args.batch_size,
-        transform=transform
+        transform_kwargs={"mean": (0.4913, 0.482, 0.446), "std": (0.247, 0.243, 0.261)},
     )
 
     # ------------
