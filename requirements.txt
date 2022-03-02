@@ -1,3 +1,3 @@
 matplotlib>=3.0
-lightning-flash
+lightning-flash>=0.7.1
 PyYAML==5.4
