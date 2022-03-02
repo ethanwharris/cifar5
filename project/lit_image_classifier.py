@@ -5,7 +5,7 @@ import torch
 import pytorch_lightning as pl
 from torchmetrics import functional as PLF
 from torch.nn import functional as F
-from flash.image.classification.input import ImageClassificationData
+from flash.image import ImageClassificationData
 from torchvision import transforms
 from torchvision import models
 import numpy as np
@@ -22,7 +22,7 @@ class LitClassifier(pl.LightningModule):
         )
 
     def forward(self, batch):
-        x, y = batch
+        x, y = batch["input"], batch["target"]
 
         # used only in .predict()
         y_hat = self.backbone(x)
@@ -31,7 +31,7 @@ class LitClassifier(pl.LightningModule):
         return predicted_classes
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
+        x, y = batch["input"], batch["target"]
         y_hat = self.backbone(x)
         y_hat = self.classifier(y_hat)
         loss = F.cross_entropy(y_hat, y)
@@ -39,7 +39,7 @@ class LitClassifier(pl.LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
+        x, y = batch["input"], batch["target"]
         y_hat = self.backbone(x)
         y_hat = self.classifier(y_hat)
         loss = F.cross_entropy(y_hat, y)
@@ -48,7 +48,7 @@ class LitClassifier(pl.LightningModule):
         self.log('valid_acc', acc)
 
     def test_step(self, batch, batch_idx):
-        x, y = batch
+        x, y = batch["input"], batch["target"]
         y_hat = self.backbone(x)
         y_hat = self.classifier(y_hat)
         loss = F.cross_entropy(y_hat, y)
@@ -98,7 +98,7 @@ def cli_main():
     # in real life you would have a separate validation split
     datamodule = ImageClassificationData.from_folders(
         train_folder=args.data_dir + '/train',
-        valid_folder=args.data_dir + '/test',
+        val_folder=args.data_dir + '/test',
         test_folder=args.data_dir + '/test',
         batch_size=args.batch_size,
         transform=transform
